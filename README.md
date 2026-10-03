@@ -40,8 +40,20 @@
 ## What This Does
 
 <!-- Three or four sentences: what a user asks for, and what they get back. -->
+<<<<<<< HEAD
 FitFindr helps a thrift shopper find a secondhand item and figure out how to wear it. The user types a request in plain language, like `vintage graphic tee under $30, size M`. FitFindr searches 40 listings (jackets, dresses, sneakers and more) for the best match within that size and budget. It then suggests one or two outfits that pair the item with pieces from the user's wardrobe and writes a short, social-post-style "fit card" caption about the find. If nothing matches, it stops and tells the user what to change, such as raising the budget or trying a different size.
 
+=======
+This is a clothing store and there are some vintage clothes.For example, jacket, dress,and sneakers
+
+The store has many items. Each item comes with id, title, description, category, style_tags, size, condition, price, color, brand, and platform.
+
+For example user asks 'vintage graphic tee under $30'
+
+Answer: The planning loop isn't built yet — see the TODO in agent.py.
+
+Test to push it to the git
+>>>>>>> 17f894e (Finish tool inventory)
 ---
 
 ## Tool Inventory
@@ -59,15 +71,25 @@ FitFindr helps a thrift shopper find a secondhand item and figure out how to wea
 ### `search_listings`
 
 - **What it does:** Searches the 40 listings in data/listings.json. Filters by max price and size when they are giving
+<<<<<<< HEAD
 - **Inputs:** 'description' (str), keywords such as "vintage graphic tee"; 'size' (str or None), None skips the size filter; 'max_price' (float or None), inclusive, None skips the price filter. A size matches only as a whole token: "M" matches "S/M" and "M/L", but "L" does not match "XL" and "S" does not match "US 9". One-size listings match any size.
+=======
+- **Inputs:** 'description' (str), keywords such as " vintage graphic tee"; 'size'(str or None). None skip the size filter. 
+>>>>>>> 17f894e (Finish tool inventory)
 - **Returns:** A list of up to 10 listing dicts (config.SEARCH_RESULT_LIMIT) best match first.
 - **When it has nothing:** Return an empty list. not None and not an exception. The loop checks for this stops.
 
 ### `suggest_outfit`
 
+<<<<<<< HEAD
 - **What it does:** Asks for the model, via generate(), for one or two outfits built around the new item, using pieces from the user's wardrobe
 - **Inputs:** 'new_item'(dict), one listing dict from search_listings; 'wardrobe'(dict) with an 'items' key holding a list of wardrobe item.
 - **Returns:** A non-empty string with one or two outfit suggestions that name specific wardrobe pieces to pair with the item.
+=======
+- **What it does:** Asks for the model, via generate(), for one oe two outfits built around the new item,using pieces from user's wardrobe
+- **Inputs:** 'new_item'(dict), one listing dict from search_listing; "wardrobe'(dict) with an 'items' key holding a list of wardrobe item.
+- **Returns:** A non-empty string with one or two outfit suggestions that name specific wardrobe prices to pair with the item.
+>>>>>>> 17f894e (Finish tool inventory)
 - **When it has nothing:** If 'wardrobe["items"]'is empty, it asks the model for general styling advice for the item instead, so it still return a non empty data
 
 ### `create_fit_card`
