@@ -40,20 +40,8 @@
 ## What This Does
 
 <!-- Three or four sentences: what a user asks for, and what they get back. -->
-<<<<<<< HEAD
 FitFindr helps a thrift shopper find a secondhand item and figure out how to wear it. The user types a request in plain language, like `vintage graphic tee under $30, size M`. FitFindr searches 40 listings (jackets, dresses, sneakers and more) for the best match within that size and budget. It then suggests one or two outfits that pair the item with pieces from the user's wardrobe and writes a short, social-post-style "fit card" caption about the find. If nothing matches, it stops and tells the user what to change, such as raising the budget or trying a different size.
 
-=======
-This is a clothing store and there are some vintage clothes.For example, jacket, dress,and sneakers
-
-The store has many items. Each item comes with id, title, description, category, style_tags, size, condition, price, color, brand, and platform.
-
-For example user asks 'vintage graphic tee under $30'
-
-Answer: The planning loop isn't built yet — see the TODO in agent.py.
-
-Test to push it to the git
->>>>>>> 17f894e (Finish tool inventory)
 ---
 
 ## Tool Inventory
@@ -71,25 +59,15 @@ Test to push it to the git
 ### `search_listings`
 
 - **What it does:** Searches the 40 listings in data/listings.json. Filters by max price and size when they are giving
-<<<<<<< HEAD
 - **Inputs:** 'description' (str), keywords such as "vintage graphic tee"; 'size' (str or None), None skips the size filter; 'max_price' (float or None), inclusive, None skips the price filter. A size matches only as a whole token: "M" matches "S/M" and "M/L", but "L" does not match "XL" and "S" does not match "US 9". One-size listings match any size.
-=======
-- **Inputs:** 'description' (str), keywords such as " vintage graphic tee"; 'size'(str or None). None skip the size filter. 
->>>>>>> 17f894e (Finish tool inventory)
 - **Returns:** A list of up to 10 listing dicts (config.SEARCH_RESULT_LIMIT) best match first.
 - **When it has nothing:** Return an empty list. not None and not an exception. The loop checks for this stops.
 
 ### `suggest_outfit`
 
-<<<<<<< HEAD
 - **What it does:** Asks for the model, via generate(), for one or two outfits built around the new item, using pieces from the user's wardrobe
 - **Inputs:** 'new_item'(dict), one listing dict from search_listings; 'wardrobe'(dict) with an 'items' key holding a list of wardrobe item.
 - **Returns:** A non-empty string with one or two outfit suggestions that name specific wardrobe pieces to pair with the item.
-=======
-- **What it does:** Asks for the model, via generate(), for one oe two outfits built around the new item,using pieces from user's wardrobe
-- **Inputs:** 'new_item'(dict), one listing dict from search_listing; "wardrobe'(dict) with an 'items' key holding a list of wardrobe item.
-- **Returns:** A non-empty string with one or two outfit suggestions that name specific wardrobe prices to pair with the item.
->>>>>>> 17f894e (Finish tool inventory)
 - **When it has nothing:** If 'wardrobe["items"]'is empty, it asks the model for general styling advice for the item instead, so it still return a non empty data
 
 ### `create_fit_card`
@@ -152,7 +130,7 @@ Tuck the graphic tee into the wide-leg khaki trousers, secured with the brown le
 
 ```
 $ python -c "from tools import search_listings; print(search_listings('graphic tee', max_price=30))"
-[{'id': 'lst_006', 'title': 'Graphic Tee — 2003 Tour Bootleg Style', 'description': 'Vintage-style bootleg tee with faded graphic. Slightly boxy fit. 100% cotton, soft and worn-in.', 'category': 'tops', 'style_tags': ['graphic tee', 'vintage', 'grunge', 'streetwear', 'band tee'], 'size': 'L', 'condition': 'good', 'price': 24.0, 'colors': ['black'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_002', 'title': 'Y2K Baby Tee — Butterfly Print', 'description': 'Super cute early 2000s baby tee with butterfly graphic. Fitted crop length. Tag says medium but fits like a small.', 'category': 'tops', 'style_tags': ['y2k', 'vintage', 'graphic tee', 'cottagecore'], 'size': 'S/M', 'condition': 'excellent', 'price': 18.0, 'colors': ['white', 'pink', 'purple'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_033', 'title': 'Vintage Band Tee — Faded Grey', 'description': 'Faded grey band-style tee with distressed graphic. Crew neck. Fits boxy. Well-loved but no holes or major damage.', 'category': 'tops', 'style_tags': ['vintage', 'grunge', 'band tee', 'graphic tee', 'streetwear'], 'size': 'L', 'condition': 'fair', 'price': 19.0, 'colors': ['grey', 'charcoal'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_015', 'title': 'Vintage Graphic Hoodie — Faded Black', 'description': 'Faded black pullover hoodie with barely-visible vintage graphic on the chest. Cozy interior. Some pilling but adds to the worn-in look.', 'category': 'tops', 'style_tags': ['vintage', 'grunge', 'graphic', 'streetwear'], 'size': 'L', 'condition': 'fair', 'price': 26.0, 'colors': ['black', 'charcoal'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_017', 'title': 'Mesh Long-Sleeve Top — Black', 'description': 'Sheer black mesh long-sleeve. Great for layering under a graphic tee or over a bralette. Stretchy material, fits true to size.', 'category': 'tops', 'style_tags': ['y2k', 'grunge', 'goth', 'layering'], 'size': 'S/M', 'condition': 'excellent', 'price': 15.0, 'colors': ['black'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_011', 'title': 'Low-Rise Cargo Pants — Khaki', 'description': 'Y2K era low-rise cargo pants. Lots of pockets. Khaki color, slightly distressed at the hems. Great for layering with a long tee.', 'category': 'bottoms', 'style_tags': ['y2k', 'cargo', '2000s', 'streetwear'], 'size': 'W29', 'condition': 'fair', 'price': 27.0, 'colors': ['khaki', 'tan'], 'brand': None, 'platform': 'poshmark'}, {'id': 'lst_012', 'title': 'Oversized Crewneck Sweatshirt — Vintage Navy', 'description': 'Perfectly faded navy crewneck. Genuinely vintage — not manufactured distressed. Ribbed cuffs and hem. No graphics, clean.', 'category': 'tops', 'style_tags': ['vintage', 'basics', 'oversized', 'classic'], 'size': 'XL (fits oversized)', 'condition': 'good', 'price': 20.0, 'colors': ['navy'], 'brand': None, 'platform': 'threadUp'}]
+[{'id': 'lst_006', 'title': 'Graphic Tee — 2003 Tour Bootleg Style', 'description': 'Vintage-style bootleg tee with faded graphic. Slightly boxy fit. 100% cotton, soft and worn-in.', 'category': 'tops', 'style_tags': ['graphic tee', 'vintage', 'grunge', 'streetwear', 'band tee'], 'size': 'L', 'condition': 'good', 'price': 24.0, 'colors': ['black'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_002', 'title': 'Y2K Baby Tee — Butterfly Print', 'description': 'Super cute early 2000s baby tee with butterfly graphic. Fitted crop length. Tag says medium but fits like a small.', 'category': 'tops', 'style_tags': ['y2k', 'vintage', 'graphic tee', 'cottagecore'], 'size': 'S/M', 'condition': 'excellent', 'price': 18.0, 'colors': ['white', 'pink', 'purple'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_033', 'title': 'Vintage Band Tee — Faded Grey', 'description': 'Faded grey band-style tee with distressed graphic. Crew neck. Fits boxy. Well-loved but no holes or major damage.', 'category': 'tops', 'style_tags': ['vintage', 'grunge', 'band tee', 'graphic tee', 'streetwear'], 'size': 'L', 'condition': 'fair', 'price': 19.0, 'colors': ['grey', 'charcoal'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_015', 'title': 'Vintage Graphic Hoodie — Faded Black', 'description': 'Faded black pullover hoodie with barely-visible vintage graphic on the chest. Cozy interior. Some pilling but adds to the worn-in look.', 'category': 'tops', 'style_tags': ['vintage', 'grunge', 'graphic', 'streetwear'], 'size': 'L', 'condition': 'fair', 'price': 26.0, 'colors': ['black', 'charcoal'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_017', 'title': 'Mesh Long-Sleeve Top — Black', 'description': 'Sheer black mesh long-sleeve. Great for layering under a graphic tee or over a bralette. Stretchy material, fits true to size.', 'category': 'tops', 'style_tags': ['y2k', 'grunge', 'goth', 'layering'], 'size': 'S/M', 'condition': 'excellent', 'price': 15.0, 'colors': ['black'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_011', 'title': 'Low-Rise Cargo Pants — Khaki', 'description': 'Y2K era low-rise cargo pants. Lots of pockets. Khaki color, slightly distressed at the hems. Great for layering with a long tee.', 'category': 'bottoms', 'style_tags': ['y2k', 'cargo', '2000s', 'streetwear'], 'size': 'W29', 'condition': 'fair', 'price': 27.0, 'colors': ['khaki', 'tan'], 'brand': None, 'platform': 'poshmark'}, {'id': 'lst_012', 'title': 'Oversized Crewneck Sweatshirt — Vintage Navy', 'description': 'Perfectly faded navy crewneck. Genuinely vintage — not manufactured distressed. Ribbed cuffs and hem. No graphics, clean.', 'category': 'tops', 'style_tags': ['vintage', 'basics', 'oversized', 'classic'], 'size': 'XL (fits oversized)', 'condition': 'good', 'price': 20.0, 'colors': ['navy'], 'brand': None, 'platform': 'thredUp'}]
 ```
 
 ```
