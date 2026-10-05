@@ -1,334 +1,330 @@
-# FitFindr
+# The Unofficial Guide
 
-> ### 👋 Start here
+**Piyaporn Puangprasert(Nan) corpus : city_guides index **
+
+> **This file is your submission.** Fill it in as you go — most sections get
+> written during the milestone that produces them, not at the end.
 >
-> **New to this repo? Read [RUNNING.md](RUNNING.md) first** — setup, every
-> command, and what to do when something breaks.
+> How the starter works, and every command you'll need, is in `RUNNING.md`.
+> Leave that file alone.
 >
-> Once `python test.py` passes:
+> **Paste everything as text.** No screenshots, no video. A typed table gets
+> full credit; a picture of the same table gets none.
 >
-> ```bash
-> python app.py listings --full -n 6      # read the data (Milestone 1)
-> python app.py fields                    # what you can filter on
-> python app.py ask 'vintage graphic tee under $30'
-> ```
->
-> All three tools are stubs, so that last command will do nothing useful yet.
-> That's the starting position.
->
-> **The rest of this file is your submission.** Fill it in as you go.
+> Delete these instruction blocks as you replace them. The `<!-- -->` comments
+> are notes to you and don't show up when the page renders — you can leave them
+> or remove them.
 
 ---
 
-<!-- ─────────────────────────────────────────────────────────────────────────
-     HOW TO USE THIS FILE
-
-     This is your submission. Fill each section in as you finish the milestone
-     it belongs to — don't leave it all to the end.
-
-     Unit 3 asks for the first five sections. Unit 4 adds the five below them.
-     Leave the unit 4 sections alone until then; they're here so you know
-     what's coming.
-
-     Everything is pasted as TEXT. No screenshots, no images, no video links.
-     A typed block of output gets full credit; a picture of the same output
-     gets none.
-     ───────────────────────────────────────────────────────────────────────── -->
-
-<!-- ═══════════════════════ UNIT 3 — THE BUILD ═══════════════════════ -->
+# Unit 1
 
 ## What This Does
 
-<!-- Three or four sentences: what a user asks for, and what they get back. -->
+ I choose a campus_life corpus:
+ - It is about 88 short posts ( 1-3 paragraphs each) covering on student-life,housing, parking permit, dinning, financial aid, etc. 
+  Questions can be ask: for example, 
+  - when is the add/drop class deadline?
+  - How to apply financial aid?
+  - How far from dinning hall to some class building?
+  - Etc.
+  P.S. The answer will come from the material topic (No, Outside sources such as Google search)
 
 
-Test to push it to the git
----
+## Chunking Strategy
 
-## Tool Inventory
+**Chunk size:**
+88 chunks
+**Overlap:**
 
-<!-- Four lines per tool. This is worth 2 points and it's the single most
-     common place students lose them.
+What about YOUR documents made you pick these numbers? Short posts and
+     long sectioned guides don't want the same chunking, and "800 seemed
+     reasonable" earns nothing. Point at something you noticed when you read
+     the documents in Milestone 1.
 
-     "Returns a list" earns NOTHING. The description has to say what is IN
-     the list.
+     If you changed your mind partway through, say so and say why. That's worth
+     more than pretending you got it right first time.
 
-     The empty case isn't optional either — it's the thing your loop branches
-     on, and if you don't decide it here you'll discover it as a crash in
-     Milestone 5. -->
+     Milestone 3. 
 
-### `search_listings`
-
-- **What it does:**
-- **Inputs:** <!-- name and type each: `max_price` (float), not "a price" -->
-- **Returns:**
-- **When it has nothing:**
-
-### `suggest_outfit`
-
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
-
-### `create_fit_card`
-
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
-
----
-
-## Planning Loop
-
-<!-- Your branch rule, stated as a rule — the condition AND both paths — plus
-     the file and function that holds it.
-
-     Like this:
-       "If search_listings returns an empty list, put a message in the session
-        and stop. Otherwise take the first result and go to suggest_outfit."
-        — agent.py::run_agent
-
-     The grader checks your code against what you claim here, so the file and
-     function have to be real. -->
-
-**Branch rule:**
-
-**Where it lives:** `agent.py::run_agent`
-
-**How the query is parsed:** <!-- regex, string splitting, or asking the model — say which -->
-
-**What moves through the session:** <!-- which fields, in what order -->
-
----
-
-## Sample Run
-
-<!-- Two things go here.
-
-     1. One FULL query and its output, pasted as text.
-     2. Your three per-tool terminal tests — the command and what it printed. -->
-
-**One full query**
+Answer: I asked "How do I apply for financial aid?" and the system responded
+"no information explaining how to apply for financial aid" — the corpus
+doesn't cover an application process. Next I changed the question to match
+what the corpus actually contains:
 
 ```
-$ python app.py ask '...'
-
+python app.py ask "What are the graduation requirements?"
 ```
 
-**The three tools, tested one at a time**
+## Sample Chunks
+
+ Five chunks, pasted as text. Label each one and name the file it came from
+     AND the function that produced it — the grader checks your code against
+     what you claim here.
+
+     `python app.py chunks -n 5` prints all three for you. Copy them straight
+     across.
+
+     Milestone 3. 
+
+**Chunk 1** — source: `` admin_add_drop_deadline.txt#0   —  produced by: chunker.py::fallback_split ``
 
 ```
-$ python -c "from tools import search_listings; print(search_listings('graphic tee', max_price=30))"
+On the add/drop deadline
 
+You can add a course through the end of the second week. Dropping is a longer window — through the end of week six — but a drop after week two shows as a W on your transcript. Nothing anywhere on the registrar's site says this plainly, and students find out from each other.
 ```
 
-```
-$ python -c "from tools import suggest_outfit; ..."
+**Chunk 2** — source: `` course_biol_160.txt#0   —  produced by: chunker.py::fallback_split ``
 
 ```
+BIOL 160 Cell Biology
+
+I lived here my sophomore year. Format is lecture three times a week with a weekly lab. Assessment: four unit tests and a cumulative final. Not curved.
+
+Expect 9 to 11 hours a week, the heaviest first-year course by reputation.
+
+The one piece of advice: the unit tests come fast, roughly every three weeks; falling behind once is very hard to recover from.
+```
+
+**Chunk 3** — source: `` course_hist_118_workload.txt#0  — produced by: chunker.py::fallback_split ``
 
 ```
-$ python -c "from tools import create_fit_card; ..."
+Workload for HIST 118 Modern World History
 
+People keep asking so: a lot of reading, about 120 pages a week, but no problem sets. That's real time, not optimistic time.
+
+It's front-loaded — the first month is heavier than the rest, partly because you're learning the format.
 ```
 
----
+**Chunk 4** — source: ``dining_pellew_dining_hall_followup.txt#0  — produced by: chunker.py::fallback_split``
+
+```
+Re: Pellew Dining Hall
+
+Adding to what people have said about Pellew Dining Hall. The wait figure of 12 to 18 minutes at peak matches what I've seen. If you're trying to eat between classes, go before 11:45 and it's a different building entirely.
+
+Also worth saying: the furthest hall from anywhere, next to the athletics centre. Nobody tells you this at orientation.
+```
+
+**Chunk 5** — source: `` housing_innisfree_hall.txt#0  — produced by: chunker.py::fallback_split``
+
+```
+Innisfree Hall — what it's actually like
+
+Transferred in last year, so take this with a grain of salt. Built 1991, renovated 2022. Rooms are doubles arranged as pairs sharing one bathroom between two rooms.
+
+The good: the shared-bathroom-between-two-rooms arrangement is the best compromise on campus.
+
+The bad: no air conditioning, which matters for the first three weeks of September.
+
+Laundry costs $1.75 wash, $1.75 dry, app-based. On noise: moderate; the building is L-shaped and the short wing is much quieter.
+
+For each one, ask: could someone answer a question using only this,
+without reading what came before or after?
+```
+
+## Sample Answer
+
+One complete question and answer, pasted as text, with the source line
+     visible. Milestone 4. 
+
+**Question:** `python app.py ask "What are the graduation requirements?"`
+
+**Answer:**
+
+```
+(best distance 0.327, cutoff 0.6)
+
+Based on the provided documents, the graduation requirements are 120 credit
+hours, a completed major, the general education requirements, and the
+writing-intensive requirement of two courses taken in different departments
+(admin_graduation_requirements.txt).
+```
+
+**My relevance cutoff:**
+
+The number you set in config.py, and how you got there.
+
+     You ran five questions your corpus covers and the five in OUT_OF_SCOPE
+     that it clearly doesn't, and wrote down the best distance for each. What
+     did those two groups look like? Where was the gap? Put the actual numbers
+     here — the table below wants all ten rows.
+
+     Milestone 4. 
+
+| Question | In corpus? | Best distance |
+|---|---|---|
+|What do students say about wait times at Commons during lunch?  | Yes | 0.308 |
+|When is the add/drop period for this semester?  | Yes | 0.273 |
+|What time does the library close on weekends?  | Yes | 0.414 |
+|How do I get a parking permit?  |Yes  | 0.534 |
+|What majors are offered in the Computer Science department? | Yes | 0.579 |
+
+| What is the capital of Thailand? | No | 0.897  |
+| How do I win the lottery? | No | 0.549 |
+| Who won the 2026 World Cup? | No | 0.856 |
+| How to get a software engineering job? | No | 0.734 |
+| How to finish a master degree in May 2027? | No | 0.568 |
+
 
 ## How I Used AI
 
-<!-- Two specific moments. What you asked, what came back, what you changed.
+ Two specific moments. For each: what you asked for, what came back, and
+     what you changed about it.
 
-     "I used Claude to help me code" is not enough.
+     "I asked Claude to write the chunking function from my notes. It ignored
+     the overlap, so I added that myself" is the level of detail we're after.
+     "I used AI to help me code" is not.
 
-     "I gave Claude my search_listings spec. It returned None on no match
-     instead of an empty list, so I changed it" is the level we want. -->
+     Milestone 5. 
 
-**Moment 1**
+**1.**
+I asked Claude to write the chunking function from this assignment, but it did not work. Claude do not understand this question.
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+**2.**
 
-**Moment 2**
-
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
-
-<!-- ═══════════════════════ UNIT 4 — THE TEST ═══════════════════════
-
-     Don't fill these in during unit 3.
-     ═══════════════════════════════════════════════════════════════════ -->
+ ── Stretch features ─────────────────────────────────────────────────────
+     Doing one? Say so here BEFORE you start. A feature this README never
+     claims earns nothing.
+     ───────────────────────────────────────────────────────────────────────── 
 
 ---
+
+# Unit 2
+
+These sections get ADDED to what's already above. Don't delete or rewrite
+     unit 1 — the point is that someone can see what you said before you knew
+     how it went. 
 
 ## Run Log — Before
 
-<!-- Five criteria, five tries each, in this exact format.
+ Your five criteria, three runs each. `python run_eval.py --label before`
+     runs the questions, puts the OUT_OF_SCOPE ones through the gate, and
+     writes it all into results/ for you. Targets come from criteria.md; the
+     verdict column is your call.
 
-     Five, because your criteria are written out of five. Mark each try PASS
-     or FAIL, count the passes, and read that count against your target — a
-     row targeting 4 of 5 with three PASS cells is MISSED (3/5).
+     Criterion 3 is measured in one deterministic pass rather than three, so
+     the same number goes in all three run columns. That's correct, not lazy.
 
-     `python run_eval.py --label before` runs everything and writes the table
-     into results/. Paste it here and fill in the verdicts. -->
 
-| Criterion | Target | Try 1 | Try 2 | Try 3 | Try 4 | Try 5 | Verdict |
-|---|---|---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |  |  |
+     Milestone 1. -->
 
-**Real output from one try**, pasted as text, naming the file and function
-that produced it:
-
-```
-
-```
-
----
-
-## Verdicts and Diagnoses
-
-<!-- MET or MISSED per criterion against LAST UNIT's target, plus a sentence on
-     how you decided.
-
-     Then, for every miss: which of the four places it happened — a tool, the
-     loop's branch, the session, or the model's output — AND the mechanism.
-
-     Not a diagnosis:  "The fit card was bad."
-     A diagnosis:      "The fit card criterion missed on 2 of 5 items. Both had
-                        an empty brand field. My prompt puts the brand in the
-                        first sentence, so the card opened with a blank and read
-                        like a fragment. The tool worked; the prompt assumed a
-                        field that isn't always there."
-
-     Look for a pattern. Three misses on the same tool is one problem, not
-     three. -->
-
-| # | Criterion | Target | Verdict | How I decided |
-|---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
-
-**Diagnoses**
+| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5 / 5 | 5/5 | 5/5 | MET|
+| 2. Every answer names a source | 5 of 5 | 4 /5 | 4 /5 | 4 /5 | MISSED |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 3/5 | 3/5 | 3/5 |  MISSED|
 
 
 
----
-
-## Loop Trace
-
-<!-- One full run, printed step by step, with the MCP call visible in it.
-
-     `python app.py ask '...' --trace` once you've added the trace.step()
-     calls in Milestone 2.
-
-     Worth pasting BOTH the happy path and the empty-search path. The empty
-     one should be visibly shorter, because it stops. If your two traces are
-     the same length, your branch isn't working — and this is the fastest way
-     anyone will ever find that out. -->
-
-**Happy path**
-
-```
-
-```
-
-**Empty search**
-
-```
-
-```
-
-**On the MCP move:** <!-- what changed in your code, and whether anything
-behaved differently afterwards. If the rewire didn't work, say exactly where it
-broke — the error text and the last thing that worked. That earns the point in
-full. -->
+ Underneath, paste the REAL output for each criterion from one of your
+     runs — the actual text your system produced, not a description of it.
+     Name the file and function that produced it. 
 
 
+__________________________
+## Verdicts
 
----
+ MET or MISSED for each of the five, against the target you wrote last
+     unit — not a new one. Plus a sentence on how you decided. That sentence
+     matters most where it was close.
+
+     If your target said 4 of 5 and your runs came out 4, 3, 4, that's a MISS.
+     The target has to hold, not show up occasionally.
+
+     Milestone 2. 
+
+| # | Criterion | Verdict | How I decided |
+|---|---|---|---|
+| 1 | What do students say about wait times at Commons during lunch? | MET | AGREE |
+| 2 | When is the add/drop period for this semester? | MET | AGREE |
+| 3 | What time does the library close on weekends? | MET | AGREE |
+| 4 | How do I get a parking permit? | MET | AGREE |
+| 5 | What majors are offered in the Computer Science department? | MET |AGREE  |
+
+
+## Diagnoses
+
+ For each miss: which stage caused it, and how. The stage alone isn't
+     enough — you need the mechanism.
+
+     Not a diagnosis: "Question 3 didn't work."
+     A diagnosis:     "Question 3 asks about laundry costs. The answer is in
+                       one sentence that got split across two chunks, so
+                       neither chunk on its own contains it."
+
+     The five stages: loading → chunking → embedding → retrieval → generation.
+
+     Look for a pattern. If three misses all ask about numbers, that's one
+     problem, not three.
+
+     Missed nothing? Say so, then say honestly whether your targets were set
+     low, and which one you'd tighten and to what.
+
+The in-scope and out-of-score distances overlap.
+
+Foe example the parking question (in scope) is 0.534, but the lottory question ( out-of-scope) is 0.549 and the master degree is 0.568. A cutoff of 0.6 sites above all of them can pass
+
+     Milestone 3. -->
 
 ## The Improvement
 
-<!-- What you changed, why your diagnosis pointed at it, and the after-run in
-     the same table format. One change, measured properly.
-
-     `python run_eval.py --label after` -->
-
 **What I changed:**
+I change the 'THRESHOLD =0.6' to 'THRESHOLD =0.54' that should return *refused*
 
-**Which failure it was meant to fix:**
+
+
+**Why I picked it:**
+
+Because the 'THRESHOLD  < 0.6'
+
+ Connect it to a specific diagnosis above in one sentence. If you can't,
+     you picked a fix because it sounded impressive. 
 
 ### Run Log — After
 
-| Criterion | Target | Try 1 | Try 2 | Try 3 | Try 4 | Try 5 | Verdict |
-|---|---|---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |  |  |
+ Same format, same five criteria, three runs each.
+     `python run_eval.py --label after` 
 
-**Did it help, and how do I know:**
+| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 4/5 | 4/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 4/5 | 4/5 | 4/5 |MISSED  |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 |5/5 | 5/5 |  MET|
 
-<!-- If it made things worse, say that. Honestly reported, that earns full
-     credit and is more interesting than one that worked. -->
-
+____________________
+ 
 
 
----
+_____________________________________________
+**Did it help?**
+
+ Say plainly whether it did, and how you know. If it made things worse,
+     say that — a change that backfired, honestly reported, earns full credit
+     and is more interesting than one that worked. What matters is that you can
+     tell.
+
+     Milestone 4. 
 
 ## What's Still Broken
 
-<!-- For each criterion still missed: what you'd do, and why you stopped where
-     you did. "I ran out of time" is fine if it's true. Pretending nothing is
-     left is not. -->
+Yes, it still broken. Adjust to lower the 'THRESHOLD' to lower than 0.54. But the question about What majors are offered in the Computer Science department? give me the chunk was 0.579 that mean this question should *REFUSE* instead of *PASS* that I can confirm this in results/run_2026-09-29_1844_after.md
 
+For each criterion still missed after your fix: what you'd do about it,
+     
+ The 'run_eval.py' asked 'scorer.py' that this question should return *REFUSE*. That mean the correct answer is to sya "I don't know" because no document proof.    
 
+     
 
-<!-- ═════════════════════════════════════════════════════════════════════
+     Milestone 5.
 
-     SUBMISSION CHECKLIST — unit 3
+## What I'd Do Differently
 
-       [ ] criteria.md has five numbered criteria, each with a target
-       [ ] Each criterion has a reason underneath it
-       [ ] All five unit 3 sections above have real content
-       [ ] Tool Inventory: all three tools, inputs WITH TYPES, a specific
-           return value, and the empty case
-       [ ] Planning Loop names the branch rule and agent.py::run_agent
-       [ ] Sample Run: one full query plus the three per-tool tests, as text
-       [ ] At least four new commits
-       [ ] Repository URL submitted — WRITE IT DOWN, you submit the same one
-           next unit
+Knowing what you know now — which of your five criteria would you write
+     differently, and why?
 
-     SUBMISSION CHECKLIST — unit 4
+     Milestone 5. 
 
-       [ ] mcp_server.py exists with one tool registered
-           (or a written record of exactly where the rewire broke)
-       [ ] Run Log — Before, five criteria, five tries each
-       [ ] Real output pasted underneath, naming file and function
-       [ ] A verdict on every criterion
-       [ ] A diagnosis for every miss, naming a place AND a mechanism
-       [ ] Loop Trace, with the MCP call visible in it
-       [ ] All three failure modes triggered and handled
-       [ ] One improvement, with Run Log — After in the same format
-       [ ] What's Still Broken
-       [ ] At least four new commits
-       [ ] The SAME repository URL as last unit
-
-     Do not delete and recreate this repository. Your commit history is what
-     shows your criteria existed before your results did.
-     ═════════════════════════════════════════════════════════════════════ -->
-
----
-
-📖 **How to run this project: [RUNNING.md](RUNNING.md)**
+check if the txt file has a correct information and clear content. Then, compare the answer with the difference number of'THRESHOLD'.
+I confuse myself about 4/5, 5/5 , missed, and met. Because there are 10 questions. The questions are only in-text 5 and out-of-scope 5. I will keep *PASS* or *REFUSE** in each question instead. with chung number because some question pass with 'THRESHOLD' > 0.54 that is something we need to find out, why it happen?
