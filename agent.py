@@ -17,6 +17,7 @@ import re
 
 import config
 import trace
+from mcp_client import call_tool
 from tools import search_listings, suggest_outfit, create_fit_card
 from generate import ModelUnavailable
 
@@ -184,6 +185,7 @@ def run_agent(query: str, wardrobe: dict) -> dict:
         than a stack trace. The import is already at the top of this file.
     """
     session = new_session(query, wardrobe)
+    trace.start_trace()
     next_step = "parse"
     count = 0
 
@@ -193,34 +195,69 @@ def run_agent(query: str, wardrobe: dict) -> dict:
 
         if next_step == "parse":
             session["parsed"] = parse_query(session["query"])
+            trace.step("parse_query", inputs=session["query"], returned=str(session["parsed"]))
             next_step = "search"
 
         elif next_step == "search":
             parsed = session["parsed"]
-            session["search_results"] = search_listings(
-                parsed["description"], parsed["size"], parsed["max_price"]
-            )
+            search_inputs = {
+                "description": parsed["description"],
+                "size": parsed["size"],
+                "max_price": parsed["max_price"],
+            }
+            session["search_results"] = call_tool("search_listings", search_inputs)
             # The branch: an empty search ends the run here.
             if not session["search_results"]:
+                trace.step("search_listings (via MCP)", inputs=str(search_inputs),
+                           returned=session["search_results"],
+                           note="branch: empty, stopping before suggest_outfit")
                 session["error"] = _no_results_message(session["parsed"])
                 next_step = "done"
             else:
+                trace.step("search_listings (via MCP)", inputs=str(search_inputs),
+                           returned=session["search_results"],
+                           note="branch: got results, going on to select")
                 next_step = "select"
 
         elif next_step == "select":
             session["selected_item"] = session["search_results"][0]
+            trace.step("select_item", returned=session["selected_item"],
+                       note="took the first (best-scoring) result")
             next_step = "outfit"
 
         elif next_step == "outfit":
-            session["outfit_suggestion"] = suggest_outfit(
-                session["selected_item"], session["wardrobe"]
-            )
-            next_step = "fit_card"
+            try:
+                session["outfit_suggestion"] = suggest_outfit(
+                    session["selected_item"], session["wardrobe"]
+                )
+            except ModelUnavailable as err:
+                trace.step("suggest_outfit", inputs=session["selected_item"],
+                           note=f"model unavailable, stopping: {err}")
+                session["error"] = (
+                    "I found an item but couldn't reach the model to suggest an "
+                    f"outfit. Check the API key in .env and your connection, then try again. ({err})"
+                )
+                next_step = "done"
+            else:
+                trace.step("suggest_outfit", inputs=session["selected_item"],
+                           returned=session["outfit_suggestion"])
+                next_step = "fit_card"
 
         elif next_step == "fit_card":
-            session["fit_card"] = create_fit_card(
-                session["outfit_suggestion"], session["selected_item"]
-            )
+            try:
+                session["fit_card"] = create_fit_card(
+                    session["outfit_suggestion"], session["selected_item"]
+                )
+            except ModelUnavailable as err:
+                trace.step("create_fit_card", inputs=session["selected_item"],
+                           note=f"model unavailable, stopping: {err}")
+                session["error"] = (
+                    "I suggested an outfit but couldn't reach the model to write the "
+                    f"fit card. Check the API key in .env and your connection, then try again. ({err})"
+                )
+            else:
+                trace.step("create_fit_card", inputs=session["selected_item"],
+                           returned=session["fit_card"])
             next_step = "done"
 
     return session
