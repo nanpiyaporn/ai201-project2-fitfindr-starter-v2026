@@ -47,6 +47,40 @@ SCENARIOS = [
     # For a fit-card criterion, you probably want the SAME query listed more
     # than once, or several different items, depending on what your criterion
     # actually says.
+        {
+        # State: the item search picked is the item later tools received. Criterion 3.
+        "name": "selected item carried through",
+        "query": "denim jacket under $50",
+        "wardrobe": "example",
+        "criterion": 3,
+    },
+    {
+        # Same item five times, to compare the five fit cards. Criterion 4.
+        "name": "fit card facts and variety",
+        "query": "vintage graphic tee under $30",
+        "wardrobe": "example",
+        "criterion": 4,
+    },
+    {
+        # Price ceiling, one scenario per phrasing. Criterion 5.
+        "name": "price ceiling: under $30",
+        "query": "graphic tee under $30",
+        "wardrobe": "example",
+        "criterion": 5,
+    },
+    {
+        "name": "price ceiling: $25 or less",
+        "query": "jeans $25 or less",
+        "wardrobe": "example",
+        "criterion": 5,
+    },
+    {
+        "name": "price ceiling: max 40",
+        "query": "jacket max 40",
+        "wardrobe": "example",
+        "criterion": 5,
+    },
+
 ]
 
 WARDROBES = ("example", "empty")
