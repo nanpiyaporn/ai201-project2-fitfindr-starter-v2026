@@ -361,7 +361,7 @@ under the ceiling.
 Pair the graphic tee with the baggy straight-leg jeans and the brown leather belt. Layer the black cropped zip hoodie on top (wear it unzipped to show off the graphic). Finish with the chunky white sneakers and the black crossbody bag. 
 
 **Outfit 2: Contrast Neutral Mix**
-Tuck the graphic tee into the wide-leg khaki trousers, secured with the brown leather belt. Throw the vintage black denim jacket over your shoulders andground the look with the black combat boots. Accessorize with the black crossbody bag for an effortless, balanced fit.
+Tuck the graphic tee into the wide-leg khaki trousers, secured with the brown leather belt. Throw the vintage black denim jacket over your shoulders and ground the look with the black combat boots. Accessorize with the black crossbody bag for an effortless, balanced fit.
 
   Fit card: Finally found the ultimate 2003 tour bootleg style graphic tee to complete my grunge streetwear rotation, and I scored it on Depop for just $24.00. The vintage fade on this black top is so good, and it looks insanely cool layered under an unzipped hoodie or tucked into wide-leg trousers. It has that authentic thrifted band merch energy that makes every outfit instantly cooler.
 
@@ -483,7 +483,7 @@ only how the trace prints, so I didn't expect it to change any result, and it di
      you did. "I ran out of time" is fine if it's true. Pretending nothing is
      left is not. -->
 
-The criterion 4 still names a price of 18 when the item costs $24, and jeans $25 or less returns nothing. I ran out of time.
+The criterion 4 still names a price of 18 when the item costs $24, and jeans $25 or less returns nothing.
 
 <!-- ═════════════════════════════════════════════════════════════════════
 
