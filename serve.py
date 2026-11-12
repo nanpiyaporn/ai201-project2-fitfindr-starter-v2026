@@ -172,8 +172,16 @@ def ask():
     start = time.perf_counter()
     before = _usage_snapshot()
 
-    payload = request.get_json(silent=True) or {}
-    query = (payload.get("query") or "").strip()
+    
+    payload = request.get_json(silent=True) 
+    
+    #query = (payload.get("query") or "").strip()
+    
+    if not isinstance(payload, dict):
+        payload = {}
+    query = payload.get("query")
+    query = query.strip() if isinstance(query, str) else ""
+
     if not query:
         # 400 rather than a stack trace: the caller can act on this one.
         message = ("Send JSON with a 'query' field, e.g. "
