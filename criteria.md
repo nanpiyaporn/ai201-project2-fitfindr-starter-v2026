@@ -53,16 +53,17 @@ For 5 matching queries, `session["selected_item"]["id"]` equals
 `new_item` input of both `suggest_outfit` and `create_fit_card` — 5 of 5 runs,
 zero mismatched ids.
 
-<!-- YOU WRITE THIS ONE.
 
-     How would you know that the item your search found is the same item the
-     next tool received? Name something countable or observable.
 
-     This is the criterion people find hardest, because state failure doesn't
-     look like state failure — it looks like a tool problem. Something that
-     compares session["selected_item"] against what actually reached
-     suggest_outfit is the shape you're after. -->
-     In 5 matching runs, the item search pick keeps the same listing 'id'. It must match 'search_results[0]', 'search_item', and the 'new_item'. that reaches both 'suggest_outfit' and 'create_fit_card(check through the trace).Target is 5 of 5 because passing a dict through the session involves no model.
+How would you know that the item your search found is the same item the next tool received? 
+Name something countable or observable.
+
+This is the criterion people find hardest, because state failure doesn't
+look like state failure, it looks like a tool problem. Something that compares session["selected_item"] 
+ against what actually reached suggest_outfit
+ is the shape you're after. 
+
+In 5 matching runs, the item search pick keeps the same listing 'id'. It must match 'search_results[0]', 'search_item', and the 'new_item'. that reaches both 'suggest_outfit' and 'create_fit_card(check through the trace).Target is 5 of 5 because passing a dict through the session involves no model.
 
 **Why this target:**
 Passing a dict through the session is plain Python with no model involved, so
@@ -83,19 +84,20 @@ Run `create_fit_card` 5 times on the same item with the cache off
 no two cards open with the same first sentence, and no card ever contains the
 word `None` — 5 of 5.
 
-<!-- YOU WRITE THIS ONE.
 
-     The fit card calls a model, so the same input can produce different words
-     each time. That's not a bug — it's the nature of the tool. So what would
-     make it acceptable?
+The fit card calls a model, so the same input can produce different words each time. 
+That's not a bug — it's the nature of the tool. So what would make it acceptable?
 
-     Think about what you'd actually be unhappy to see. A caption that never
-     mentions the price? Two different items producing the same opening
-     sentence? A card longer than a caption anyone would post? Any of those can
-     be turned into a number. -->
 
-     Run it 5 times one item with the cache turned off ( AI201_CACHE = 0)
-     - At least 4 of 5 cards name the price the platform and 2-4 sentences long (the model doesn't always follow the prompt).
+Think about what you'd actually be unhappy to see. 
+- A caption that never mentions the price? 
+- Two different items producing the same opening
+sentence? 
+- A card longer than a caption anyone would post? 
+Any of those can be turned into a number. 
+
+Run it 5 times one item with the cache turned off ( AI201_CACHE = 0)
+- At least 4 of 5 cards name the price the platform and 2-4 sentences long (the model doesn't always follow the prompt). 
 
 
 **Why this target:**
@@ -117,12 +119,9 @@ e.g. "under $30", "$25 or less", "max 40" — every listing in
 `session["search_results"]` has `price <= session["parsed"]["max_price"]`, and
 `max_price` is the number the user typed. 5 of 5 queries, zero listings over.
 
-<!-- YOU WRITE THIS ONE TOO.
 
-     Pick something you actually care about getting right. Speed, the empty
-     wardrobe path, what happens when the model can't be reached, whether the
-     search respects a price ceiling — anything, as long as it names a number
-     or an observable outcome. -->
+Pick something you actually care about getting right. Speed, the empty wardrobe path,
+ what happens when the model can't be reached, whether the search respects a price ceiling or anything, as long as it names a number or an observable outcome. 
 
 **Why this target:**
 A budget is the one thing a thrift shopper won't forgive — showing a $45 jacket
@@ -167,3 +166,66 @@ parsing was broken.
      A number you missed stays where it is, gets diagnosed, and gets a fix
      attempted. That's where the points are.
      ───────────────────────────────────────────────────────────────────────── -->
+
+---
+
+# Capstone (unit 9) — acceptance criteria
+
+Written before any capstone results existed. The extension is **Shape A:
+deploy and instrument** — `serve.py` running locally (Path B) with a
+structured log in `logs/serve_log.jsonl`. Criteria 1–4 are about the
+extension; criterion 5 checks the original agent didn't break.
+
+Each trial sends the same 11 requests (`capstone_trials.py`): 5 matching
+queries, 1 query that matches nothing, and 5 bad inputs. Three trials before
+the fix, three after. Server runs with the cache **off** (`AI201_CACHE=0`).
+
+## C1. Every request leaves a complete log record
+
+Of the 11 requests in a trial, 11 of 11 produce a line in
+`logs/serve_log.jsonl` with all of: `ts`, `status`, `query`, `outcome`,
+`duration_s`, `total_tokens`.
+
+**Why this target:** the log is the only way to diagnose anything later, and a
+request that vanishes from it is exactly the one I'd need. A failure that
+shows up only as an absence can't be found, so anything below 11 of 11 is a
+miss — including requests that error out.
+
+## C2. Bad input gets a 400 with a message, never a 500
+
+Of the 5 bad inputs (empty object, blank query, non-JSON text, a JSON list, a
+number as the query), 5 of 5 come back as HTTP 400 with a JSON `error` field.
+
+**Why this target:** a 400 tells the caller *they* sent something wrong and
+can fix it; a 500 says the server broke. Bad input is cheap to check before
+the agent runs, so there's no reason to accept even one 500 here.
+
+## C3. A matching query answers in under 8 seconds
+
+Of the 5 matching queries, at least 4 of 5 log `duration_s` under 8.0
+(server already running, i.e. warm — not counting start-up).
+
+**Why this target:** one run is two model calls (`suggest_outfit` and
+`create_fit_card`). A flash-lite call usually takes a few seconds, so ~8s is
+two calls plus margin. I allow one slow one in five because `generate.py`
+paces calls to 15 per minute and a trial can bump into that limit.
+
+## C4. One successful run costs at most 4,000 tokens
+
+Of the 5 matching queries, 5 of 5 log `total_tokens` (prompt + output, as
+reported by the service) between 1 and 4,000.
+
+**Why this target:** both prompts include the selected listing and the whole
+example wardrobe, and each answer is a short paragraph. 4,000 is a ceiling
+that catches a prompt that accidentally grew (e.g. all 40 listings sent).
+A 0 means the cache was on and nothing was measured, so 0 counts as a miss.
+
+## C5. The original agent still works over HTTP
+
+Of the 6 real queries, 6 of 6 behave like the CLI: the 5 matching queries
+return HTTP 200 with a non-empty `fit_card`, and the impossible query returns
+HTTP 200 with an `error` message and no `fit_card`.
+
+**Why this target:** `serve.py` must add no agent logic. The CLI already met
+this 5/5 in unit 4, so anything less over HTTP means the extension broke
+something.

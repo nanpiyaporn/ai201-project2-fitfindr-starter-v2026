@@ -246,3 +246,50 @@ history is what shows your criteria existed before your results did.
 units.
 
 `results/` is deliberately **not** in `.gitignore`.
+
+---
+
+## Capstone (unit 9) — Path B: run locally with logs
+
+FitFindr runs as a local web server. I chose Path B because the free host asks
+for a card, and Path B is worth the same.
+
+**Environment:** Python 3.11 (3.11–3.13 supported, not 3.14). Pinned packages
+in `requirements.txt` (flask, google-genai, mcp, python-dotenv, gunicorn). No
+local model files — the model is called over the Gemini API, so the only
+secret is `GEMINI_API_KEY` in `.env`.
+
+**From a clean checkout (Windows PowerShell):**
+
+```powershell
+git clone <this repo> fitfindr; cd fitfindr
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+copy .env.example .env          # paste your key into .env
+```
+
+**Start it — the single command (cache off so every run is real):**
+
+```powershell
+$env:AI201_CACHE="0"; python serve.py
+```
+
+(macOS/Linux: `AI201_CACHE=0 python serve.py`)
+
+It listens on `http://localhost:5000`. Check it's awake in a second terminal:
+
+```powershell
+curl.exe http://localhost:5000/health
+```
+
+**Run one trial** (second terminal, venv activated, server still running):
+
+```powershell
+python capstone_trials.py --label before --trial 1
+```
+
+**Where the record is:** every `/ask` request appends one JSON line to
+`logs/serve_log.jsonl`. Each trial also writes
+`results/capstone_<label>_trial<N>.md` with the scores, every response, and
+the new log lines. Both are committed — they are the run record.

@@ -522,3 +522,60 @@ The criterion 4 still names a price of 18 when the item costs $24, and jeans $25
 ---
 
 📖 **How to run this project: [RUNNING.md](RUNNING.md)**
+
+---
+
+## Capstone
+
+**What This Extends**
+
+FitFindr (units 3–4): the agent that searches second-hand listings, suggests
+an outfit from your wardrobe, and writes a fit card. Before this unit it only
+ran from the command line (`python app.py ask`) and left no record. New this
+unit: it runs as a local web server (`serve.py`), and every request writes one
+structured JSON line to `logs/serve_log.jsonl` with timing and token cost.
+
+**The Shape**
+
+Shape A — deploy and instrument. I added a structured log to `serve.py`
+(`write_log()` and `log_request()`), logging the good path, the agent's own
+"no results" path, bad input (400) and crashes (500). I also added
+`capstone_trials.py` to send the same 11 requests each trial and score them.
+
+Out of scope: I'm not hosting it online (Path B instead), I'm not changing the
+three tools, the prompts, or the search scoring, and I'm not fixing the old
+fit-card price bug from unit 4.
+
+**Running It**
+
+Path B — local with logs. One command: `$env:AI201_CACHE="0"; python serve.py`.
+Full steps, environment and versions are in [RUNNING.md](RUNNING.md).
+
+**Instrumentation**
+
+Each line in `logs/serve_log.jsonl` holds: `ts` (UTC time), `route`, `status`
+(HTTP code), `query`, `outcome` (`fit_card` / `agent_error` / `bad_input` /
+`crash`), `item_id`, `error`, `duration_s`, `model_calls`, `prompt_tokens`,
+`output_tokens`, `total_tokens`.
+
+<!-- TODO after the before-run: paste 10+ real lines, including a failed one -->
+
+**What It Costs**
+
+<!-- TODO after the before-run: tokens per run, how measured, x100/day -->
+
+**Run Log and Verdicts**
+
+<!-- TODO: before table, 5 criteria x 3 trials, verdicts, diagnoses -->
+
+**The Improvement**
+
+<!-- TODO -->
+
+**What's Still Broken**
+
+<!-- TODO -->
+
+**How I Used AI**
+
+<!-- TODO: two specific moments -->

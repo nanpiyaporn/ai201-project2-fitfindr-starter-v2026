@@ -27,15 +27,17 @@ web server has to be. The reason is worth reading before you deploy: see the
 note above `_one_at_a_time` below — it also decides which gunicorn worker you
 can use.
 
-⚠️ There is deliberately NO logging, NO timing and NO request counting in this
-file. That is unit 9's follow-along: you instrument this yourself, first, and
-then deploy it. A structured log you were handed teaches you nothing about
-what belongs in one — and the timing field is the one everybody skips.
+CAPSTONE (unit 9): every /ask request now writes one JSON line to
+logs/serve_log.jsonl — timestamp, query, status, outcome, duration, model
+calls and tokens. See write_log() / log_request() below.
 """
 
+import json
 import os
 import sys
 import threading
+import time
+from datetime import datetime, timezone
 
 # config first, and before anything that talks to the model: it loads your .env
 # and fixes the Windows console encoding for every module that imports it.
@@ -43,10 +45,70 @@ import config  # noqa: F401
 
 from flask import Flask, jsonify, request
 
+import generate
 from agent import run_agent
 from utils.data_loader import get_example_wardrobe
 
 app = Flask(__name__)
+
+
+# ── CAPSTONE (unit 9): structured log ────────────────────────────────────────
+# Every /ask request — good, bad, or crashed — writes ONE line of JSON to
+# logs/serve_log.jsonl. One record per line, named fields, so it can be read
+# back later with a script instead of squinting at print() output.
+#
+# Fields:
+#   ts             when the request finished (UTC, ISO 8601)
+#   route          which endpoint
+#   status         HTTP status code we sent back
+#   query          what came in (None if there was no usable query)
+#   outcome        "fit_card" | "agent_error" | "bad_input" | "crash"
+#   item_id        id of the listing the agent picked (None if none)
+#   error          the error message, if any
+#   duration_s     wall-clock seconds for the whole request
+#   model_calls    real model calls this request made (cached calls = 0)
+#   prompt_tokens  tokens sent, as reported by the service
+#   output_tokens  tokens received, as reported by the service
+#   total_tokens   prompt + output — this is the per-run cost number
+
+LOG_PATH = config.ROOT / "logs" / "serve_log.jsonl"
+
+
+def write_log(record: dict) -> None:
+    """Append one record as one JSON line. Logging must never crash a request."""
+    try:
+        LOG_PATH.parent.mkdir(exist_ok=True)
+        with LOG_PATH.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [log] could not write log: {exc}", file=sys.stderr, flush=True)
+
+
+def _usage_snapshot() -> dict:
+    tokens = generate.token_counts()
+    return {"calls": generate.call_count(),
+            "prompt": tokens["prompt"], "output": tokens["output"]}
+
+
+def log_request(start: float, before: dict, status: int, query, outcome: str,
+                item_id=None, error=None) -> None:
+    after = _usage_snapshot()
+    prompt = after["prompt"] - before["prompt"]
+    output = after["output"] - before["output"]
+    write_log({
+        "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "route": "/ask",
+        "status": status,
+        "query": query,
+        "outcome": outcome,
+        "item_id": item_id,
+        "error": error,
+        "duration_s": round(time.perf_counter() - start, 2),
+        "model_calls": after["calls"] - before["calls"],
+        "prompt_tokens": prompt,
+        "output_tokens": output,
+        "total_tokens": prompt + output,
+    })
 
 
 # ── one request at a time ─────────────────────────────────────────────────────
@@ -107,12 +169,17 @@ def ask():
                                                 example wardrobe the CLI uses.
     Out:  the session dict from run_agent(), as JSON.
     """
+    start = time.perf_counter()
+    before = _usage_snapshot()
+
     payload = request.get_json(silent=True) or {}
     query = (payload.get("query") or "").strip()
     if not query:
         # 400 rather than a stack trace: the caller can act on this one.
-        return jsonify({"error": "Send JSON with a 'query' field, e.g. "
-                                 '{"query": "vintage graphic tee under $30"}'}), 400
+        message = ("Send JSON with a 'query' field, e.g. "
+                   '{"query": "vintage graphic tee under $30"}')
+        log_request(start, before, 400, None, "bad_input", error=message)
+        return jsonify({"error": message}), 400
 
     wardrobe = payload.get("wardrobe")
     if not isinstance(wardrobe, dict):
@@ -147,8 +214,13 @@ def ask():
     # Outside the lock: building a response is not work the next caller should
     # be waiting on.
     if failure is not None:
+        log_request(start, before, 500, query, "crash", error=failure)
         return jsonify({"error": failure}), 500
 
+    item = session.get("selected_item") or {}
+    outcome = "agent_error" if session.get("error") else "fit_card"
+    log_request(start, before, 200, query, outcome,
+                item_id=item.get("id"), error=session.get("error"))
     return jsonify(session)
 
 
